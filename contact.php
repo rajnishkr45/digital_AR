@@ -5,12 +5,11 @@
     <meta charset="utf-8">
     <title>Digital | Contact us</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="" name="keywords">
-    <meta content="" name="description">
 
-    <?php
-    include 'includes/cdn.php';
-    ?>
+    <?php include 'includes/cdn.php'; ?>
+
+    <!-- SweetAlert CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -24,13 +23,9 @@
         </div>
         <!-- Spinner End -->
 
-
-        <!-- Navbar & Hero Start -->
+        <!-- Navbar Start -->
         <div class="container-xxl position-relative p-0">
-            <?php
-            include 'includes/navbar.php';
-            ?>
-
+            <?php include 'includes/navbar.php'; ?>
             <div class="container-xxl py-5 bg-primary hero-header">
                 <div class="container my-5 py-5 px-lg-5">
                     <div class="row g-5 py-5">
@@ -49,24 +44,21 @@
                 </div>
             </div>
         </div>
-        <!-- Navbar & Hero End -->
-
+        <!-- Navbar End -->
 
         <!-- Contact Start -->
         <div class="container-xxl py-5">
             <div class="container py-5 px-lg-5">
                 <div class="wow fadeInUp" data-wow-delay="0.1s">
-                    <p class="section-title text-secondary justify-content-center"><span></span>Contact Us<span></span>
-                    </p>
+                    <p class="section-title text-secondary justify-content-center"><span></span>Contact Us<span></span></p>
                     <h1 class="text-center mb-5">Contact For Any Query</h1>
                 </div>
                 <div class="row justify-content-center">
                     <div class="col-lg-7">
                         <div class="wow fadeInUp" data-wow-delay="0.3s">
-                            <p class="text-center mb-4"> Have questions or ideas? Fill out the form and we'll respond
-                                shortly.
-                                Our smart Ajax & PHP setup ensures quick and reliable communication.</p>
-                            <form>
+                            <p class="text-center mb-4">Have questions or ideas? Fill out the form and we'll respond
+                                shortly.</p>
+                            <form id="contactForm">
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="form-floating">
@@ -106,23 +98,56 @@
         </div>
         <!-- Contact End -->
 
-
-        <!-- Footer Start -->
-        <?php
-        include 'includes/footer.php';
-        ?>
-
-        <!-- Footer End -->
-
+        <?php include 'includes/footer.php'; ?>
 
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-secondary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
     </div>
 
-    <!-- JavaScript Libraries -->
-    <?php
-    include 'includes/scripts.php';
-    ?>
+    <?php include 'includes/scripts.php'; ?>
+
+    <!-- Contact JS with SweetAlert -->
+    <script>
+        document.getElementById("contactForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const subject = document.getElementById("subject").value.trim();
+            const message = document.getElementById("message").value.trim();
+
+            if (!name || !email || !subject || !message) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'All fields are required!',
+                });
+                return;
+            }
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "backend/contact_message.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Message Sent',
+                        text: xhr.responseText,
+                    });
+                    document.getElementById("contactForm").reset();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong!',
+                    });
+                }
+            };
+
+            xhr.send(`name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&subject=${encodeURIComponent(subject)}&message=${encodeURIComponent(message)}`);
+        });
+    </script>
 </body>
 
 </html>
